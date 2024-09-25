@@ -21,7 +21,10 @@ abstract class AppDatabase : RoomDatabase(){
                     AppDatabase::class.java,
                     "app_database"
                 ).build()
+
+                //Set singleton instance
                 INSTANCE = instance
+                //Return the database instance
                 instance
             }
         }

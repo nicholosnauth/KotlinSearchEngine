@@ -1,5 +1,6 @@
 package com.example.kotlinsearchengine
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -18,7 +19,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.lifecycleScope
 import com.example.kotlinsearchengine.ui.theme.KotlinSearchEngineTheme
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,7 +31,7 @@ class MainActivity : ComponentActivity() {
             KotlinSearchEngineTheme {
                 // A surface container using the 'background color from the theme
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background){
-                    SearchScreen()
+                    SearchScreen(this)
                 }
             }
 
@@ -37,7 +40,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun SearchScreen(){
+fun SearchScreen(context: Context){
     var query by remember { mutableStateOf("") }
     var results by remember { mutableStateOf(emptyList<String>()) }
 
@@ -46,9 +49,11 @@ fun SearchScreen(){
         SearchBar(query = query, onQueryChanged = { newQuery ->
 
                 query = newQuery
-                results = performSearch(newQuery)
+            (context as ComponentActivity).lifecycleScope.launch {
+                results = performSearch(context, newQuery)
+            }
 
-            })
+        })
         Spacer(modifier = Modifier.height(16.dp))
 
         SearchResults(results = results)
